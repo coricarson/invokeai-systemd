@@ -11,8 +11,9 @@ install-invokeai:
 		git clone --depth=1 https://github.com/invoke-ai/InvokeAI.git; \
 		cd ./InvokeAI; \
 		cp -p ./docker/run.sh ./docker/run.sh.old; \
-		sed --in-place --regexp-extended 's#^  --mount type=bind,source="\$\(pwd\)"/outputs/,#  --mount type=volume,volume-driver=local,source=invokeai_data#g' ./docker/run.sh; \
-		sed --in-place --regexp-extended 's#^\[\[ -d \./outputs \]\] \|\| mkdir \./outputs#docker volume create invokeai_data --opt o=uid=1000#g' ./docker/run.sh; \
+		sed --in-place --regexp-extended 's#^\s{0,8}--mount type=bind,source=[^,]{0,30},#  --mount type=volume,volume-driver=local,source=invokeai_data,#g' ./docker/run.sh; \
+		sed --in-place --regexp-extended 's#^\s{0,8}\[\[ -d \./outputs \]\] \|\| mkdir \./outputs#docker volume create invokeai_data --opt o=uid=1000#g' ./docker/run.sh; \
+		sed --in-place --regexp-extended 's#^\s{0,8}--publish=9090:9090#--publish=127.0.0.1:9090:9090#g' ./docker/run.sh; \
 		cd ..; \
 		chown -R invokeai:nogroup ./InvokeAI; \
 		chmod -R -0077 ./InvokeAI; \
@@ -21,6 +22,7 @@ install-invokeai:
 	install --owner root --group root --mode 0755 invokeai.service /etc/systemd/system
 	systemctl daemon-reload
 	systemctl enable invokeai
+	systemctl start invokeai
 
 .PHONY: install-ngrok
 install-ngrok:
@@ -39,6 +41,7 @@ install-ngrok:
 	install --owner ngrok --group nogroup --mode 0700 ./ngrok /opt/job/ngrok-systemd
 	systemctl daemon-reload
 	systemctl enable ngrok.service
+	systemctl start ngrok
 
 .PHONY: install
 install: install-invokeai install-ngrok
