@@ -34,6 +34,7 @@ install:
 	)
 	install --owner root --group root --mode 0700 /opt/job/ngrok-systemd/ngrok.service /etc/systemd/system
 	install --owner ngrok --group nogroup --mode 0600 ./ngrok.yml /opt/job/ngrok-systemd
+	install --owner ngrok --group nogroup --mode 0600 ./ngrok /opt/job/ngrok-systemd
 	systemctl daemon-reload
 	systemctl enable ngrok.service
 
