@@ -14,8 +14,8 @@ install-invokeai:
 		sed --in-place --regexp-extended 's#^\s{0,8}--mount type=bind,source=[^,]{0,30},#  --mount type=volume,volume-driver=local,source=invokeai_data,#g' ./docker/run.sh; \
 		sed --in-place --regexp-extended 's#^\s{0,8}\[\[ -d \./outputs \]\] \|\| mkdir \./outputs#docker volume create invokeai_data --opt o=uid=1000#g' ./docker/run.sh; \
 		sed --in-place --regexp-extended 's#^\s{0,8}--publish=9090:9090#--publish=127.0.0.1:9090:9090#g' ./docker/run.sh; \
-		sed --in-place --regexp-extended 's#^\s{0,8}--interactive \#d' ./docker/run.sh; \
-		sed --in-place --regexp-extended 's#^\s{0,8}--tty \#d' ./docker/run.sh; \
+		sed --in-place --regexp-extended '/^\s{0,8}--interactive/d' ./docker/run.sh; \
+		sed --in-place --regexp-extended '/^\s{0,8}--tty/d' ./docker/run.sh; \
 		cd ..; \
 		chown -R invokeai:nogroup ./InvokeAI; \
 		chmod -R -0077 ./InvokeAI; \
