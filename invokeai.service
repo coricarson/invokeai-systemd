@@ -1,0 +1,15 @@
+[Unit]
+Description=InvokeAI Local Service
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=10
+User=invokeai
+WorkingDirectory=/opt/job/InvokeAI
+ExecStart=/opt/job/InvokeAI/service.sh
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,8 @@
+version: 2
+authtoken: 2M...
+region: us
+tunnels:
+  tunnelname:
+    addr: http://localhost:9090
+    labels:
+      - edge=edghts_2M...
