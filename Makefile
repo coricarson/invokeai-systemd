@@ -27,7 +27,7 @@ install:
 		git clone --depth=1 https://github.com/ngrok/ngrok-systemd.git; \
 		cd ngrok-systemd; \
 		rm -rf .git; \
-		sed --in-place --regexp-extended 's#<path>#/opt/job/ngrok-systemd#g' ./ngrok-systemd/ngrok.service; \
+		sed --in-place --regexp-extended 's#<path>#/opt/job/ngrok-systemd#g' ./ngrok.service; \
 		cd ..; \
 		chown -R ngrok:nogroup ./ngrok-systemd; \
 		chmod -R -0077 ./ngrok-systemd; \
@@ -48,3 +48,4 @@ remove:
 	systemctl stop ngrok
 	systemctl disable ngrok
 	rm -rf /opt/job/ngrok-systemd
+	systemctl daemon-reload
