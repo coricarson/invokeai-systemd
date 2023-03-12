@@ -11,8 +11,8 @@ install-invokeai:
 		git clone --depth=1 https://github.com/invoke-ai/InvokeAI.git; \
 		cd ./InvokeAI; \
 		cp -p ./docker/run.sh ./docker/run.sh.old; \
-		sed --in-place --regexp-extended 's#^\s{0,8}--mount type=bind,source=[^,]{0,30},target=/data/outputs/# --mount type=volume,volume-driver=local,source=invokeai_data,target=/outputs/#g' ./docker/run.sh; \
-		sed --in-place --regexp-extended 's#^\s{0,8}\[\[ -d \./outputs \]\] \|\| mkdir \./outputs#docker volume create invokeai_data --opt o=uid=1000#g' ./docker/run.sh; \
+		sed --in-place --regexp-extended 's#^\s{0,8}--mount type=bind,source=[^,]{0,30},target=/data/outputs/# --mount type=volume,volume-driver=local,source=invokeai_outputs,target=/outputs/#g' ./docker/run.sh; \
+		sed --in-place --regexp-extended 's#^\s{0,8}\[\[ -d \./outputs \]\] \|\| mkdir \./outputs#docker volume create invokeai_outputs --opt o=uid=1000#g' ./docker/run.sh; \
 		sed --in-place --regexp-extended 's#^\s{0,8}--publish=9090:9090#--publish=127.0.0.1:9090:9090#g' ./docker/run.sh; \
 		sed --in-place --regexp-extended '/^\s{0,8}--interactive/d' ./docker/run.sh; \
 		sed --in-place --regexp-extended '/^\s{0,8}--tty/d' ./docker/run.sh; \
