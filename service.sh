@@ -6,7 +6,7 @@ export CONTAINER_FLAVOR=cpu
 #export CONTAINER_FLAVOR=cuda
 #export GPU_FLAGS=all
 
-source ./env.sh
+source ./docker/env.sh
 
 # Only build if we need to.
 docker inspect --type=image "${CONTAINER_IMAGE:-invokeai}" || ./docker/build.sh
