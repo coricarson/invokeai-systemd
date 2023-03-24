@@ -79,3 +79,43 @@ exit # sudo su
 
 Now, restore from a backup you took earlier. 
 YOU TOOK A BACKUP, RIGHT?
+
+
+# Steam Deck
+## SteamOS 3.4.x
+
+```bash
+# Set a password for `deck` if you haven't yet
+passwd
+# Disable the readonly filesystem configuration so that packages can be installed.
+# You may find that files installed in locations normally marked `read-only` are not guaranteed to persist across SteamOS updates.
+sudo steamos-readonly disable
+
+# Initialize pacman's keys
+sudo pacman-key --init
+sudo pacman-key --populate archlinux
+
+# Get into orbit. You're halfway to anywhere now.
+sudo pacman -S docker base-devel
+
+# default drive mapping on SteamOS 3.4 places the /var folder on a small mount.
+# Way too small to hold what we're building here.
+# Therefore, move the docker folder to the largest area, which is /home.
+# ATTENTION: if you have a base model steam deck with only a small amount of eMMC, 
+# consider pointing this at an sd card or USB disk instead.
+echo '{ "data-root": "/home/docker" }' | sudo tee /etc/docker/daemon.json
+sudo mkdir -p /home/docker
+
+# If this doesn't fire up cleanly, double-check your docker data root location
+sudo systemctl start docker
+
+
+# Now let's install InvokeAI
+git clone --depth=1 https://github.com/coricarson/invokeai-systemd.git
+cd invokeai-systemd
+
+# Add your huggingface token
+nano ./service.sh
+
+sudo make install-invokeai
+```

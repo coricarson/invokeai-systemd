@@ -9,7 +9,7 @@ export CONTAINER_FLAVOR=cpu
 source ./docker/env.sh
 
 # Only build if we need to.
-docker inspect --type=image "${CONTAINER_IMAGE:-invokeai}" || ./docker/build.sh
+docker inspect --type=image "${CONTAINER_IMAGE:-invokeai}" >/dev/null 2>&1 || ./docker/build.sh
 
 # Ensure permissions, especially after a backup/restore.
 docker run --rm --network=none -v invokeai_outputs:/outputs busybox:stable chown -R 1000:1000 /outputs
