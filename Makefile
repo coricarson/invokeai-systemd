@@ -7,7 +7,7 @@ install-invokeai:
 	mkdir -p /opt/job
 	chmod +0055 /opt/job
 	( \
-		grep -qE '^nobody:' /etc/group; then GROUP="nobody"; else GROUP="nouser"; fi; \
+		if grep -qE '^nobody:' /etc/group; then GROUP="nobody"; else GROUP="nouser"; fi; \
 		cd /opt/job; \
 		git clone --depth=1 https://github.com/invoke-ai/InvokeAI.git; \
 		cd ./InvokeAI; \
