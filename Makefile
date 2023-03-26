@@ -7,6 +7,7 @@ install-invokeai:
 	mkdir -p /opt/job
 	chmod +0055 /opt/job
 	( \
+		grep -qE '^nobody:' /etc/group; then GROUP="nobody"; else GROUP="nouser"; fi; \
 		cd /opt/job; \
 		git clone --depth=1 https://github.com/invoke-ai/InvokeAI.git; \
 		cd ./InvokeAI; \
@@ -15,10 +16,10 @@ install-invokeai:
 		sed --in-place --regexp-extended '/^\s{0,8}--interactive/d' ./docker/run.sh; \
 		sed --in-place --regexp-extended '/^\s{0,8}--tty/d' ./docker/run.sh; \
 		cd ..; \
-		chown -R invokeai:nobody ./InvokeAI; \
+		chown -R invokeai:${GROUP} ./InvokeAI; \
 		chmod -R -0077 ./InvokeAI; \
+		install --owner invokeai --group ${GROUP} --mode 0700 ./service.sh /opt/job/InvokeAI \
 	)
-	install --owner invokeai --group nobody --mode 0700 ./service.sh /opt/job/InvokeAI
 	install --owner root --group root --mode 0755 invokeai.service /etc/systemd/system
 	systemctl daemon-reload
 	systemctl enable invokeai
