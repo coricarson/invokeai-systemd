@@ -1,7 +1,7 @@
 all: 
 
 .PHONY: install-invokeai
-.ONESHELL
+.ONESHELL:
 SHELL = /bin/env bash
 install-invokeai: 
 	if grep -qE '^nobody:' /etc/group; then
