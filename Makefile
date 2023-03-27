@@ -4,25 +4,31 @@ all:
 .ONESHELL
 SHELL = /bin/env bash
 install-invokeai: 
-	useradd -r -m -s /usr/bin/nologin invokeai || true
+	if grep -qE '^nobody:' /etc/group; then
+		# Debian, Ubuntu, and friends
+		GROUP="nobody"
+		adduser invokeai --system || true
+	else 
+		# Arch, SteamOS
+		GROUP="nouser"
+		useradd -r -m -s /usr/bin/nologin invokeai || true
+	fi
 	usermod -aG docker invokeai
 	mkdir -p /opt/job
 	chmod +0055 /opt/job
-	if grep -qE '^nobody:' /etc/group; then
-		GROUP="nobody"
-	else 
-		GROUP="nouser"
-	fi
 	pushd /opt/job
 	git clone --depth=1 https://github.com/invoke-ai/InvokeAI.git
 	pushd ./InvokeAI
-	cp -p ./docker/run.sh ./docker/run.sh.old
-	sed --in-place --regexp-extended 's#^\s{0,8}--mount type=bind,source=[^,]{0,30},target=/data/outputs/# --mount type=volume,volume-driver=local,source=invokeai_outputs,target=/outputs/#g' ./docker/run.sh
-	sed --in-place --regexp-extended '/^\s{0,8}--interactive/d' ./docker/run.sh
-	sed --in-place --regexp-extended '/^\s{0,8}--tty/d' ./docker/run.sh
+	pushd ./docker
+	cp -p ./run.sh ./run.sh.old
+	sed --in-place --regexp-extended 's#^\s{0,8}--mount type=bind,source=[^,]{0,30},target=/data/outputs/# --mount type=volume,volume-driver=local,source=invokeai_outputs,target=/outputs/#g' ./run.sh
+	sed --in-place --regexp-extended '/^\s{0,8}--interactive/d' ./run.sh
+	sed --in-place --regexp-extended '/^\s{0,8}--tty/d' ./run.sh
 	popd
-	chown -R "invokeai:$$GROUP" ./InvokeAI; \
-	chmod -R -0077 ./InvokeAI; \
+	popd
+	chown -R "invokeai:$$GROUP" ./InvokeAI
+	chmod -R -0077 ./InvokeAI
+	popd
 	install --owner invokeai --group "$$GROUP" --mode 0700 ./service.sh /opt/job/InvokeAI
 	install --owner root --group root --mode 0755 invokeai.service /etc/systemd/system
 	systemctl daemon-reload
