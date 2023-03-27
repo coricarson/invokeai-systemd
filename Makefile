@@ -58,7 +58,7 @@ install-ngrok:
 install: install-invokeai install-ngrok
 
 .PHONY: remove-invokeai
-.ONESHELL
+.ONESHELL:
 SHELL = /bin/env bash
 remove-invokeai:
 	systemctl stop invokeai
