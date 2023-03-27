@@ -2,7 +2,7 @@ all:
 
 .PHONY: install-invokeai
 .ONESHELL:
-SHELL = /bin/env bash
+SHELL = /bin/bash
 install-invokeai: 
 	if grep -qE '^nobody:' /etc/group; then
 		# Debian, Ubuntu, and friends
@@ -59,7 +59,7 @@ install: install-invokeai install-ngrok
 
 .PHONY: remove-invokeai
 .ONESHELL:
-SHELL = /bin/env bash
+SHELL = /bin/bash
 remove-invokeai:
 	systemctl stop invokeai
 	systemctl disable invokeai
