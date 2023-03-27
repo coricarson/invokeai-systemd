@@ -4,13 +4,13 @@ all:
 .ONESHELL:
 SHELL = /bin/bash
 install-invokeai: 
-	if grep -qE '^nobody:' /etc/group; then
+	if grep -qE '^nogroup:' /etc/group; then
 		# Debian, Ubuntu, and friends
-		GROUP="nobody"
+		GROUP="nogroup"
 		adduser invokeai --system || true
 	else 
 		# Arch, SteamOS
-		GROUP="nouser"
+		GROUP="nobody"
 		useradd -r -m -s /usr/bin/nologin invokeai || true
 	fi
 	usermod -aG docker invokeai
