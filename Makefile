@@ -1,25 +1,29 @@
 all: 
 
 .PHONY: install-invokeai
+.ONESHELL
+SHELL = /bin/env bash
 install-invokeai: 
 	useradd -r -m -s /usr/bin/nologin invokeai || true
 	usermod -aG docker invokeai
 	mkdir -p /opt/job
 	chmod +0055 /opt/job
-	( \
-		if grep -qE '^nobody:' /etc/group; then GROUP="nobody"; else GROUP="nouser"; fi; \
-		cd /opt/job; \
-		git clone --depth=1 https://github.com/invoke-ai/InvokeAI.git; \
-		cd ./InvokeAI; \
-		cp -p ./docker/run.sh ./docker/run.sh.old; \
-		sed --in-place --regexp-extended 's#^\s{0,8}--mount type=bind,source=[^,]{0,30},target=/data/outputs/# --mount type=volume,volume-driver=local,source=invokeai_outputs,target=/outputs/#g' ./docker/run.sh; \
-		sed --in-place --regexp-extended '/^\s{0,8}--interactive/d' ./docker/run.sh; \
-		sed --in-place --regexp-extended '/^\s{0,8}--tty/d' ./docker/run.sh; \
-		cd ..; \
-		chown -R invokeai:${GROUP} ./InvokeAI; \
-		chmod -R -0077 ./InvokeAI; \
-		install --owner invokeai --group ${GROUP} --mode 0700 ./service.sh /opt/job/InvokeAI \
-	)
+	if grep -qE '^nobody:' /etc/group; then
+		GROUP="nobody"
+	else 
+		GROUP="nouser"
+	fi
+	pushd /opt/job
+	git clone --depth=1 https://github.com/invoke-ai/InvokeAI.git
+	pushd ./InvokeAI
+	cp -p ./docker/run.sh ./docker/run.sh.old
+	sed --in-place --regexp-extended 's#^\s{0,8}--mount type=bind,source=[^,]{0,30},target=/data/outputs/# --mount type=volume,volume-driver=local,source=invokeai_outputs,target=/outputs/#g' ./docker/run.sh
+	sed --in-place --regexp-extended '/^\s{0,8}--interactive/d' ./docker/run.sh
+	sed --in-place --regexp-extended '/^\s{0,8}--tty/d' ./docker/run.sh
+	popd
+	chown -R "invokeai:$$GROUP" ./InvokeAI; \
+	chmod -R -0077 ./InvokeAI; \
+	install --owner invokeai --group "$$GROUP" --mode 0700 ./service.sh /opt/job/InvokeAI
 	install --owner root --group root --mode 0755 invokeai.service /etc/systemd/system
 	systemctl daemon-reload
 	systemctl enable invokeai
@@ -48,9 +52,10 @@ install-ngrok:
 install: install-invokeai install-ngrok
 
 .PHONY: remove-invokeai
+.ONESHELL
+SHELL = /bin/env bash
 remove-invokeai:
 	systemctl stop invokeai
-	docker kill invokeai
 	systemctl disable invokeai
 	rm -f /etc/systemd/system/invokeai.service
 	systemctl daemon-reload
