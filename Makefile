@@ -36,20 +36,29 @@ install-invokeai:
 	systemctl start invokeai
 
 .PHONY: install-ngrok
+.ONESHELL:
+SHELL = /bin/bash
 install-ngrok:
-	useradd -r -m -s /usr/bin/nologin ngrok || true
-	( \
-		cd /opt/job; \
-		git clone --depth=1 https://github.com/ngrok/ngrok-systemd.git; \
-		cd ngrok-systemd; \
-		sed --in-place --regexp-extended 's#<path>#/opt/job/ngrok-systemd#g' ./ngrok.service; \
-		cd ..; \
-		chown -R ngrok:nobody ./ngrok-systemd; \
-		chmod -R -0077 ./ngrok-systemd; \
-	)
-	install --owner root --group root --mode 0755 /opt/job/ngrok-systemd/ngrok.service /etc/systemd/system
-	install --owner ngrok --group nobody --mode 0600 ./ngrok.yml /opt/job/ngrok-systemd
-	install --owner ngrok --group nobody --mode 0700 ./ngrok /opt/job/ngrok-systemd
+	if grep -qE '^nogroup:' /etc/group; then
+		# Debian, Ubuntu, and friends
+		GROUP="nogroup"
+		adduser ngrok --system || true
+	else 
+		# Arch, SteamOS
+		GROUP="nobody"
+		useradd -r -m -s /usr/bin/nologin ngrok || true
+	fi
+	pushd /opt/job
+	git clone --depth=1 https://github.com/ngrok/ngrok-systemd.git
+	pushd ngrok-systemd
+	sed --in-place --regexp-extended 's#<path>#/opt/job/ngrok-systemd#g' ./ngrok.service
+	install --owner root --group root --mode 0755 ./ngrok.service /etc/systemd/system
+	popd
+	chown -R "ngrok:$$GROUP" ./ngrok-systemd
+	chmod -R -0077 ./ngrok-systemd
+	popd
+	install --owner ngrok --group "$$GROUP" --mode 0600 ./ngrok.yml /opt/job/ngrok-systemd
+	install --owner ngrok --group "$$GROUP" --mode 0700 ./ngrok /opt/job/ngrok-systemd
 	systemctl daemon-reload
 	systemctl enable ngrok.service
 	systemctl start ngrok
