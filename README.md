@@ -25,12 +25,13 @@ Make a backup of the container image and the model files, so you don't have to r
 sudo systemctl stop invokeai
 
 #Assign which backup name to use
-BACKUP="2023-03-19"
+#BACKUP="2023-03-19"
+read BACKUP
 
 mkdir "$BACKUP"
 pushd "$BACKUP"
 
-docker save ghcr.io/invokeai/invokeai -o invokeai.tar
+docker save ghcr.io/invokeai/invokeai | zstd -19 -T0 -o invokeai.tar.zst
 
 docker run --rm --network=none -v invokeai_data:/data busybox:stable tar cv /data > invokeai_data.tar
 
@@ -49,11 +50,12 @@ Remember to test your backups, in all things!
 sudo systemctl stop invokeai
 
 #Assign which backup name to use
-BACKUP="2023-03-19"
+#BACKUP="2023-03-19"
+read BACKUP
 pushd "$BACKUP"
 
 docker rmi $(docker images -q ghcr.io/invokeai/invokeai)
-docker load -i invokeai.tar
+zstdcat invokeai.tar.zst | docker load
 
 docker volume rm invokeai_data
 docker run --rm --network=none -v "$PWD:/backup:ro" -v invokeai_data:/data busybox:stable tar xv --strip-components=1 -C /data -f /backup/invokeai_data.tar
