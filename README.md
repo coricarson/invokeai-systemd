@@ -33,9 +33,13 @@ pushd "$BACKUP"
 
 docker save ghcr.io/invokeai/invokeai | zstd -19 -T0 -o invokeai.tar.zst
 
-docker run --rm --network=none -v invokeai_data:/data busybox:stable tar cv /data > invokeai_data.tar
+docker run --rm --network=none -v invokeai_data:/data:ro -v "$PWD:/out" busybox:stable tar cv /data -f /out/invokeai_data.tar
+zstd -19 -T0 ./invokeai_data.tar -o invokeai_data.tar.zst
+rm invokeai_data.tar
 
-docker run --rm --network=none -v invokeai_outputs:/outputs busybox:stable tar cv /outputs > invokeai_outputs.tar
+docker run --rm --network=none -v invokeai_outputs:/outputs -v "$PWD:/out" busybox:stable tar cv /outputs -f /out/invokeai_outputs.tar
+zstd -19 -T0 ./invokeai_outputs.tar -o invokeai_outputs.tar.zst
+rm invokeai_outputs.tar
 
 popd
 
@@ -58,10 +62,14 @@ docker rmi $(docker images -q ghcr.io/invokeai/invokeai)
 zstdcat invokeai.tar.zst | docker load
 
 docker volume rm invokeai_data
+zstd -d invokeai_data.tar.zst
 docker run --rm --network=none -v "$PWD:/backup:ro" -v invokeai_data:/data busybox:stable tar xv --strip-components=1 -C /data -f /backup/invokeai_data.tar
+rm invokeai_data.tar
 
 docker volume rm invokeai_outputs
+zstd -d invokeai_outputs.tar.zst
 docker run --rm --network=none -v "$PWD:/backup:ro" -v invokeai_outputs:/outputs busybox:stable tar xv --strip-components=1 -C /outputs -f /backup/invokeai_outputs.tar
+rm invokeai_outputs.tar
 
 popd
 
