@@ -17,7 +17,7 @@ install-invokeai:
 	mkdir -p /opt/job
 	chmod +0055 /opt/job
 	pushd /opt/job
-	git clone --depth=1 https://github.com/invoke-ai/InvokeAI.git
+	git clone --depth=1 --branch v2.3.5.post2 https://github.com/invoke-ai/InvokeAI.git
 	pushd ./InvokeAI
 	pushd ./docker
 	cp -p ./run.sh ./run.sh.old
