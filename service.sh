@@ -2,9 +2,9 @@
 # Provide your own token here.
 export HUGGING_FACE_HUB_TOKEN=hf_.......hunter2
 
-export CONTAINER_FLAVOR=cpu
-#export CONTAINER_FLAVOR=cuda
-#export GPU_FLAGS=all
+#export CONTAINER_FLAVOR=cpu
+export CONTAINER_FLAVOR=cuda
+export GPU_FLAGS=all
 
 source ./docker/env.sh
 

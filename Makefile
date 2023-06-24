@@ -21,7 +21,7 @@ install-invokeai:
 	pushd ./InvokeAI
 	pushd ./docker
 	cp -p ./run.sh ./run.sh.old
-	sed --in-place --regexp-extended 's#^\s{0,8}--mount type=bind,source=[^,]{0,30},target=/data/outputs/# --mount type=volume,volume-driver=local,source=invokeai_outputs,target=/outputs/#g' ./run.sh
+	sed --in-place --regexp-extended 's#^\s{0,8}--mount type=bind,source=[^,]{0,30},target=/data/outputs/?# --mount type=volume,volume-driver=local,source=invokeai_outputs,target=/outputs/#g' ./run.sh
 	sed --in-place --regexp-extended '/^\s{0,8}--interactive/d' ./run.sh
 	sed --in-place --regexp-extended '/^\s{0,8}--tty/d' ./run.sh
 	popd
