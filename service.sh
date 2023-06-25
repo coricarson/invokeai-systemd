@@ -5,6 +5,7 @@ export HUGGING_FACE_HUB_TOKEN=hf_.......hunter2
 #export CONTAINER_FLAVOR=cpu
 export CONTAINER_FLAVOR=cuda
 export GPU_FLAGS=all
+export INVOKEAI_BRANCH="discarded/v2.3.5.post2"
 
 source ./docker/env.sh
 
