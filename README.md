@@ -17,7 +17,7 @@ Not using ngrok? Have a different networking solution in mind?
 sudo make install-invokeai
 ```
 
-# Save to backupinvokeai_data.2023-03-19.tar
+# Save to backup
 Make a backup of the container image and the model files, so you don't have to redownload them later on.
 
 ```bash
@@ -31,7 +31,7 @@ read BACKUP
 mkdir "$BACKUP"
 pushd "$BACKUP"
 
-docker save ghcr.io/invokeai/invokeai | zstd -19 -T0 -o invokeai.tar.zst
+docker save ghcr.io/invokeai/invokeai | zstd --ultra -22 -T0 -o invokeai.tar.zst
 
 docker build --tag util - <<'EOF'
 ARG DEBIAN_FRONTEND=noninteractive
@@ -41,9 +41,9 @@ RUN apt upgrade -y
 RUN apt install -y tar zstd
 EOF
 
-docker run --rm --network=none -v invokeai_data:/data:ro -v "$PWD:/out" util bash -c 'tar cv /data -f - | zstd -19 -T0 /out/invokeai_data.tar.zst'
+docker run --rm --network=none -v invokeai_data:/data:ro -v "$PWD:/out" util bash -c 'tar cv /data -f - | zstd --ultra -22 -T0 /out/invokeai_data.tar.zst'
 
-docker run --rm --network=none -v invokeai_outputs:/outputs -v "$PWD:/out" util bash -c 'tar cv /outputs -f - | zstd -19 -T0 /out/invokeai_outputs.tar.zst'
+docker run --rm --network=none -v invokeai_outputs:/outputs -v "$PWD:/out" util bash -c 'tar cv /outputs -f - | zstd --ultra -22 -T0 /out/invokeai_outputs.tar.zst'
 
 popd
 
@@ -58,7 +58,7 @@ Remember to test your backups, in all things!
 sudo systemctl stop invokeai
 
 #Assign which backup name to use
-#BACKUP="2023-03-19"
+#BACKUP="2023-07-04"
 read BACKUP
 pushd "$BACKUP"
 

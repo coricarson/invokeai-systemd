@@ -17,11 +17,11 @@ install-invokeai:
 	mkdir -p /opt/job
 	chmod +0055 /opt/job
 	pushd /opt/job
-	git clone --depth=1 https://github.com/invoke-ai/InvokeAI.git
+	git clone --depth=1 --branch v2.3.5.post2 https://github.com/invoke-ai/InvokeAI.git
 	pushd ./InvokeAI
 	pushd ./docker
 	cp -p ./run.sh ./run.sh.old
-	sed --in-place --regexp-extended 's#^\s{0,8}--mount type=bind,source=[^,]{0,30},target=/data/outputs/# --mount type=volume,volume-driver=local,source=invokeai_outputs,target=/outputs/#g' ./run.sh
+	sed --in-place --regexp-extended 's#^\s{0,8}--mount type=bind,source=[^,]{0,30},target=/data/outputs/?# --mount type=volume,volume-driver=local,source=invokeai_outputs,target=/outputs/#g' ./run.sh
 	sed --in-place --regexp-extended '/^\s{0,8}--interactive/d' ./run.sh
 	sed --in-place --regexp-extended '/^\s{0,8}--tty/d' ./run.sh
 	popd
